@@ -104,32 +104,32 @@ const getBlueAmountFromObj = compose(getBlueAmount, getObjValues);
 
 
 // 1. Красная звезда, зеленый квадрат, все остальные белые.
-export const validateFieldN1 = (figuresObj) => isWhiteCircleWhiteTriangleGreenSquareRedStar(figuresObj);
+export const validateFieldN1 = isWhiteCircleWhiteTriangleGreenSquareRedStar;
 
 // 2. Как минимум две фигуры зеленые.
-export const validateFieldN2 = (figuresObj) => isAtLeastTwoGreenFromObj(figuresObj);
+export const validateFieldN2 = isAtLeastTwoGreenFromObj;
 
 // 3. Количество красных фигур равно кол-ву синих.
-export const validateFieldN3 = (figuresObj) => areFuncResultsEqual(getRedAmountFromObj, getBlueAmountFromObj)(figuresObj);
+export const validateFieldN3 = areFuncResultsEqual(getRedAmountFromObj, getBlueAmountFromObj);
 
 // 4. Синий круг, красная звезда, оранжевый квадрат, треугольник любого цвета
-export const validateFieldN4 = (figuresObj) => isBlueCircleOrangeSquareRedStar(figuresObj);
+export const validateFieldN4 = isBlueCircleOrangeSquareRedStar;
 
 // 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
 // export const validateFieldN5 = () => false;
-export const validateFieldN5 = (figuresObj) => getAtLeastThreeRedOrBlueOrGreenOrOrangeFromObj(figuresObj);
+export const validateFieldN5 = getAtLeastThreeRedOrBlueOrGreenOrOrangeFromObj;
 
 // 6. Ровно две зеленые фигуры (одна из зелёных – это треугольник), плюс одна красная. Четвёртая оставшаяся любого доступного цвета, но не нарушающая первые два условия
-export const validateFieldN6 = (figuresObj) => isExactTwoGreenOneRedAndGreenTriangle(figuresObj);
+export const validateFieldN6 = isExactTwoGreenOneRedAndGreenTriangle;
 
 // 7. Все фигуры оранжевые.
-export const validateFieldN7 = (figuresObj) => isAllOrange(figuresObj);
+export const validateFieldN7 = isAllOrange;
 
 // 8. Не красная и не белая звезда, остальные – любого цвета.
 export const validateFieldN8 = (figuresObj) => !isRedOrWhiteStar(figuresObj);
 
 // 9. Все фигуры зеленые.
-export const validateFieldN9 = (figuresObj) => isAllGreen(figuresObj);
+export const validateFieldN9 = isAllGreen;
 
 // 10. Треугольник и квадрат одного цвета (не белого), остальные – любого цвета
 export const validateFieldN10 = (figuresObj) => isTriangleEqualsToSquare(figuresObj) && !isWhiteTriangle(figuresObj);
