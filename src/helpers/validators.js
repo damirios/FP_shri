@@ -13,7 +13,7 @@
  * Если какие либо функции написаны руками (без использования библиотек) это не является ошибкой
  */
 // вспомогательные функции
-const compose = (...funcs) => (arg) => funcs.reduceRight((result, currFunc) => currFunc(result), arg);
+export const compose = (...funcs) => (arg) => funcs.reduceRight((result, currFunc) => currFunc(result), arg);
 const partial = (func, ...partArgs) => (...args) => func(...partArgs, ...args);
 const flip = (func) => (...args) => func(...args.reverse());
 const allPass = (funcArr) => {

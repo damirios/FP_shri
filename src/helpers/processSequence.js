@@ -14,39 +14,49 @@
  * Иногда промисы от API будут приходить в состояние rejected, (прямо как и API в реальной жизни)
  * Ответ будет приходить в поле {result}
  */
- import Api from '../tools/api';
+import Api from '../tools/api';
+import { compose } from './validators';
 
- const api = new Api();
+const api = new Api();
 
- /**
-  * Я – пример, удали меня
-  */
- const wait = time => new Promise(resolve => {
-     setTimeout(resolve, time);
- })
+const validateInput = function(value) {
+    return !isNaN(+value) && value.length < 10 && value.length > 2 && +value > 0;
+}
 
- const processSequence = ({value, writeLog, handleSuccess, handleError}) => {
-    /**
-     * Я – пример, удали меня
-     */
-//  writeLog()
+const executeAndReturn = (func) => (arg) => {
+    func(arg);
+    return arg;
+}
+
+const executeAndReturnResultProp = (func) => (arg) => {
+    func(arg.result);
+    return arg.result;
+}
+
+const getLength = (argWithLength) => argWithLength.length;
+const getSquareNumber = (arg) => Number(arg) ** 2;
+const getMod3 = (arg) => Number(arg) % 3;
+
+const processSequence = async ({value, writeLog, handleSuccess, handleError}) => {
     writeLog(value);
 
-    api.get('https://api.tech/numbers/base', {from: 10, to: 2, number: '01011010101'}).then(({result}) => {
-        writeLog(result);
-    });
+    if (!validateInput(value)) {
+        return handleError("ValidationError");
+    }
 
-    wait(2500).then(() => {
-        writeLog('SecondLog')
+    const valueRound = Math.round(+value);
+    writeLog(valueRound);
 
-        return wait(1500);
-    }).then(() => {
-        writeLog('ThirdLog');
+    const apiResponse = await api.get('https://api.tech/numbers/base')({from: 10, to: 2, number: valueRound})
+        .then(executeAndReturnResultProp(writeLog))
+        .catch(executeAndReturn(writeLog));
+    if (!apiResponse) {
+        return;
+    }
 
-        return wait(400);
-    }).then(() => {
-        handleSuccess('Done');
-    });
+    const writeLogAndReturn = executeAndReturn(writeLog);
+    const animalId = compose(writeLogAndReturn, getMod3, writeLogAndReturn, getSquareNumber, writeLogAndReturn, getLength)(apiResponse);
+    api.get(`https://animals.tech/${getMod3(animalId)}`)({}).then(executeAndReturnResultProp(handleSuccess)).catch(executeAndReturn(writeLog));
 }
 
 export default processSequence;
