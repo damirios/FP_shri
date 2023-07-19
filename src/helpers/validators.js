@@ -12,7 +12,10 @@
  *
  * Если какие либо функции написаны руками (без использования библиотек) это не является ошибкой
  */
+// вспомогательные функции
 const compose = (...funcs) => (arg) => funcs.reduceRight((result, currFunc) => currFunc(result), arg);
+const partial = (func, ...partArgs) => (...args) => func(...partArgs, ...args);
+const flip = (func) => (...args) => func(...args.reverse());
 const allPass = (funcArr) => {
     return function(arg) {
         return funcArr.reduce((result, currFunc) => result && currFunc(arg), true);
@@ -41,24 +44,26 @@ const isExactNumberColor = (argsArr, amount, color) => {
 }
 
 const areFuncResultsEqual = (firstFunc, secondFunc) => (arg) => firstFunc(arg) === secondFunc(arg);
-
-const checkEveryArgPass = (func) => (argsArr) => argsArr.reduce((result, arg) => result && func(arg), true);
 const arePropsEqual = (firstProp, secondProp) => (obj) => obj[firstProp] === obj[secondProp];
-const isTriangleEqualsToSquare = arePropsEqual('triangle', 'square');
+const isArgEqual = (value) => (arg) => arg === value;
+const checkEveryArgPass = (func) => (argsArr) => argsArr.reduce((result, arg) => result && func(arg), true);
 
-const getObjValues = (obj) => Object.values(obj);
+const getObjValues = Object.values;
 const getObjProp = (prop) => (obj) => obj[prop];
+const getColorAmount = (figuresArr, color) => figuresArr.reduce((prev, curr) => prev + Number(curr === color), 0);
+
+const isTriangleEqualsToSquare = arePropsEqual('triangle', 'square');
 
 const getTriangle = getObjProp('triangle');
 const getStar = getObjProp('star');
 const getSquare = getObjProp('square');
 const getCircle = getObjProp('circle');
 
-const isWhite = (arg) => arg === 'white';
-const isRed = (arg) => arg === 'red';
-const isGreen = (arg) => arg === 'green';
-const isBlue = (arg) => arg === 'blue';
-const isOrange = (arg) => arg === 'orange';
+const isWhite = isArgEqual('white');
+const isRed = isArgEqual('red');
+const isGreen = isArgEqual('green');
+const isBlue = isArgEqual('blue');
+const isOrange = isArgEqual('orange');
 
 const isWhiteTriangle = compose(isWhite, getTriangle);
 const isWhiteCircle = compose(isWhite, getCircle);
@@ -74,30 +79,27 @@ const isRedOrWhiteStar = compose(anyPass([isRed, isWhite]), getStar);
 const isAllOrange = compose(checkEveryArgPass(isOrange), getObjValues);
 const isAllGreen = compose(checkEveryArgPass(isGreen), getObjValues);
 
-const isAtLeastAmountGreen = (argsArr, amount) => isAtLeastAmountColor(argsArr, amount, 'green');
-const isAtLeastTwoGreen = (argsArr) => isAtLeastAmountGreen(argsArr, 2);
+const isAtLeastAmountGreen = flip(partial(flip(isAtLeastAmountColor), 'green'));
+
+const isAtLeastTwoGreen = partial(flip(isAtLeastAmountGreen), 2);
 const isAtLeastTwoGreenFromObj = compose(isAtLeastTwoGreen, getObjValues);
 
-const isAtLeastThreeRed = (argsArr) => isAtLeastAmountColor(argsArr, 3, 'red');
-const isAtLeastThreeBlue = (argsArr) => isAtLeastAmountColor(argsArr, 3, 'blue');
-const isAtLeastThreeGreen = (argsArr) => isAtLeastAmountColor(argsArr, 3, 'green');
-const isAtLeastThreeOrange = (argsArr) => isAtLeastAmountColor(argsArr, 3, 'orange');
+const isAtLeastThreeRed = partial(flip(isAtLeastAmountColor), 'red', 3);
+const isAtLeastThreeBlue = partial(flip(isAtLeastAmountColor), 'blue', 3);
+const isAtLeastThreeGreen = partial(flip(isAtLeastAmountColor), 'green', 3);
+const isAtLeastThreeOrange = partial(flip(isAtLeastAmountColor), 'orange', 3);
 
 const getAtLeastThreeRedOrBlueOrGreenOrOrangeFromObj = compose(anyPass([isAtLeastThreeBlue, isAtLeastThreeRed, isAtLeastThreeGreen, isAtLeastThreeOrange]), getObjValues);
 
-const isExactTwoColor = (argsArr, color) => isExactNumberColor(argsArr, 2, color);
-const isExactOneColor = (argsArr, color) => isExactNumberColor(argsArr, 1, color);
-
-const isExactTwoGreen = (argsArr) =>  isExactTwoColor(argsArr, 'green');
+const isExactTwoGreen = partial(flip(isExactNumberColor), 'green', 2);
 const isExactTwoGreenFromObj = compose(isExactTwoGreen, getObjValues);
-const isExactOneRed = (argsArr) => isExactOneColor(argsArr, 'red');
+const isExactOneRed = partial(flip(isExactNumberColor), 'red', 1);
 const isExactOneRedFromObj = compose(isExactOneRed, getObjValues);
 const isExactTwoGreenOneRedAndGreenTriangle = allPass([isExactTwoGreenFromObj, isExactOneRedFromObj, isGreenTriangle]);
 
-const getColorAmount = (figuresArr, color) => figuresArr.reduce((prev, curr) => prev + Number(curr === color), 0);
-const getRedAmount = (figuresArr) => getColorAmount(figuresArr, 'red');
+const getRedAmount = partial(flip(getColorAmount), 'red');
 const getRedAmountFromObj = compose(getRedAmount, getObjValues);
-const getBlueAmount = (figuresArr) => getColorAmount(figuresArr, 'blue');
+const getBlueAmount = partial(flip(getColorAmount), 'blue');
 const getBlueAmountFromObj = compose(getBlueAmount, getObjValues);
 
 
