@@ -24,6 +24,22 @@ const anyPass = (funcArr) => {
     }
 };
 
+const isAtLeastAmountColor = (argsArr, amount, color) => {
+    let colorNumber = 0;
+    return argsArr.reduce((prev, curr) => {
+        colorNumber += (curr === color) ? 1 : 0;
+        return colorNumber >= amount; 
+    }, false);
+}
+
+const isExactNumberColor = (argsArr, amount, color) => {
+    let colorNumber = 0;
+    return argsArr.reduce((prev, curr) => {
+        colorNumber += (curr === color) ? 1 : 0;
+        return colorNumber === amount; 
+    }, false);
+}
+
 const areFuncResultsEqual = (firstFunc, secondFunc) => (arg) => firstFunc(arg) === secondFunc(arg);
 
 const checkEveryArgPass = (func) => (argsArr) => argsArr.reduce((result, arg) => result && func(arg), true);
@@ -58,13 +74,6 @@ const isRedOrWhiteStar = compose(anyPass([isRed, isWhite]), getStar);
 const isAllOrange = compose(checkEveryArgPass(isOrange), getObjValues);
 const isAllGreen = compose(checkEveryArgPass(isGreen), getObjValues);
 
-const isAtLeastAmountColor = (argsArr, amount, color) => {
-    let colorNumber = 0;
-    return argsArr.reduce((prev, curr) => {
-        colorNumber += (curr === color) ? 1 : 0;
-        return colorNumber >= amount; 
-    }, false);
-}
 const isAtLeastAmountGreen = (argsArr, amount) => isAtLeastAmountColor(argsArr, amount, 'green');
 const isAtLeastTwoGreen = (argsArr) => isAtLeastAmountGreen(argsArr, 2);
 const isAtLeastTwoGreenFromObj = compose(isAtLeastTwoGreen, getObjValues);
@@ -76,13 +85,6 @@ const isAtLeastThreeOrange = (argsArr) => isAtLeastAmountColor(argsArr, 3, 'oran
 
 const getAtLeastThreeRedOrBlueOrGreenOrOrangeFromObj = compose(anyPass([isAtLeastThreeBlue, isAtLeastThreeRed, isAtLeastThreeGreen, isAtLeastThreeOrange]), getObjValues);
 
-const isExactNumberColor = (argsArr, amount, color) => {
-    let colorNumber = 0;
-    return argsArr.reduce((prev, curr) => {
-        colorNumber += (curr === color) ? 1 : 0;
-        return colorNumber === amount; 
-    }, false);
-}
 const isExactTwoColor = (argsArr, color) => isExactNumberColor(argsArr, 2, color);
 const isExactOneColor = (argsArr, color) => isExactNumberColor(argsArr, 1, color);
 
